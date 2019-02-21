@@ -2,18 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt-nodejs');
 const cors = require('cors');
+const morgan = require('morgan');
 const register = require('./controllers/register');
 const signin = require('./controllers/signin');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
 const knex = require('knex')({
     client: 'pg',
-    connection: {
-      host : '127.0.0.1',
-      user : 'jeffkwok',
-      password : '',
-      database : 'smart-brain'
-    }
+    connection: process.env.POSTGRES_URI
 });
 
 // knex.select('*').from('users').then(data => {
@@ -24,9 +20,10 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(cors());
+app.use(morgan('combined'));
 
 app.get('/', (req, res) => {
-    res.send(database.users);
+    res.send(knex.users);
 });
 
 app.post('/signin', (req, res) => {signin.handleSignin(req, res, knex, bcrypt)});
